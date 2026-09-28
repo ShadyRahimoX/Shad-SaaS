@@ -1,0 +1,15 @@
+{
+  "name": "@shad-saas/validators",
+  "version": "0.0.1-alpha",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

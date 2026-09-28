@@ -1,0 +1,12 @@
+{
+  "name": "@shad-saas/shared-types",
+  "version": "0.0.1-alpha",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
