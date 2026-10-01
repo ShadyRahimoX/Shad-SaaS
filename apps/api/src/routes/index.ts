@@ -7,6 +7,8 @@ import { depositsRoutes } from './deposits.js';
 import { webhooksRoutes } from './webhooks.js';
 import { meRoutes } from './me.js';
 import { meNotificationsRoutes } from './me-notifications.js';
+import { meChatRoutes } from './me-chat.js';
+import { adminChatRoutes } from './admin-chat.js';
 
 export const routes = new Hono();
 
@@ -19,7 +21,9 @@ routes.route('/api/webhooks', webhooksRoutes);
 // ثم الباقي
 routes.route('/api/auth', authRoutes);
 routes.route('/api/me/notifications', meNotificationsRoutes);
+routes.route('/api/me/chat', meChatRoutes);
 routes.route('/api/me', meRoutes);
+routes.route('/api/admin/chat', adminChatRoutes);
 routes.route('/api/admin', adminRoutes);
 routes.route('/api/public', publicRoutes);
 routes.route('/api/orders', ordersRoutes);

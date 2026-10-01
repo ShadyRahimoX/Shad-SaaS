@@ -11,8 +11,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm --filter @shad-saas/api dev",
-    "dev:api": "pnpm --filter @shad-saas/api dev",
+    "dev": "npm --prefix apps/api run dev",
+    "dev:api": "npm --prefix apps/api run dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "db:generate": "pnpm --filter @shad-saas/db generate",

@@ -10,6 +10,7 @@ export const DEFAULT_NOTIFICATION_TYPES = [
   { key: 'deposit.rejected', labelAr: 'تم رفض الإيداع', labelEn: 'Deposit rejected' },
   { key: 'referral.commission', labelAr: 'عمولة إحالة جديدة', labelEn: 'New referral commission' },
   { key: 'vip.upgraded', labelAr: 'تم ترقيتك لمستوى VIP', labelEn: 'VIP upgraded' },
+  { key: 'chat.message', labelAr: 'رسالة محادثة جديدة', labelEn: 'New chat message' },
 ];
 
 export async function seedNotificationTypes() {
