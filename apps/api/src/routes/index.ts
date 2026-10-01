@@ -15,6 +15,7 @@ import { adminSettingsRoutes } from './admin-settings.js';
 import { publicSettingsRoutes } from './public-settings.js';
 import { adminThemesRoutes } from './admin-themes.js';
 import { publicThemesRoutes } from './public-themes.js';
+import { publicBrandingRoutes } from './public-branding.js';
 
 export const routes = new Hono();
 
@@ -37,6 +38,7 @@ routes.route('/api/admin/themes', adminThemesRoutes);
 routes.route('/api/admin', adminRoutes);
 routes.route('/api/public/settings', publicSettingsRoutes);
 routes.route('/api/public/theme', publicThemesRoutes);
+routes.route('/api/public/branding', publicBrandingRoutes);
 routes.route('/api/public', publicRoutes);
 routes.route('/api/orders', ordersRoutes);
 routes.route('/api/deposits', depositsRoutes);

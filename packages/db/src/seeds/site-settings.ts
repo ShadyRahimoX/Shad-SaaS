@@ -24,25 +24,25 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefinition[] = [
   { key: 'registration_enabled', value: true, category: 'features', isPublic: true, valueType: 'boolean', description: 'تفعيل تسجيل المستخدمين' },
   { key: 'support_email', value: 'support@shad-saas.dev', category: 'general', isPublic: true, valueType: 'string', description: 'بريد الدعم الفني' },
   { key: 'min_deposit_usd', value: 1, category: 'payment', isPublic: true, valueType: 'number', description: 'الحد الأدنى للإيداع' },
+  // Branding settings (15 keys)
+  { key: 'branding_logo_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رابط الشعار الرئيسي' },
+  { key: 'branding_logo_dark_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رابط الشعار للنمط الداكن' },
+  { key: 'branding_favicon_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'أيقونة الموقع Favicon' },
+  { key: 'branding_og_image_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'صورة المشاركة OpenGraph' },
+  { key: 'branding_apple_touch_icon_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'أيقونة أجهزة أبل Apple Touch Icon' },
+  { key: 'branding_twitter_handle', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'حساب تويتر/X' },
+  { key: 'branding_facebook_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رابط صفحة فيسبوك' },
+  { key: 'branding_instagram_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رابط حساب إنستغرام' },
+  { key: 'branding_youtube_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رابط قناة يوتيوب' },
+  { key: 'branding_telegram_url', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رابط قناة/مجموعة تيليجرام' },
+  { key: 'branding_contact_phone', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رقم هاتف التواصل' },
+  { key: 'branding_contact_address', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'عنوان المقر' },
+  { key: 'branding_whatsapp_business', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'رقم واتساب للأعمال' },
+  { key: 'branding_copyright', value: '© {year} {site_name}. جميع الحقوق محفوظة.', category: 'branding', isPublic: true, valueType: 'string', description: 'نص حقوق الملكية' },
+  { key: 'branding_footer_text', value: '', category: 'branding', isPublic: true, valueType: 'string', description: 'نص التذييل الإضافي' },
 ];
 
-export const WHITELIST_SETTING_KEYS = [
-  'site_name',
-  'site_tagline',
-  'site_description',
-  'site_currency',
-  'site_currency_symbol',
-  'site_language',
-  'site_timezone',
-  'active_theme_slug',
-  'maintenance_mode',
-  'registration_enabled',
-  'support_email',
-  'min_deposit_usd',
-  'referral_default_commission_percent',
-  'referral_min_payout_usd',
-  'referral_enabled',
-] as const;
+export const WHITELIST_SETTING_KEYS = DEFAULT_SITE_SETTINGS.map((s) => s.key);
 
 export async function seedSiteSettings() {
   let created = 0;

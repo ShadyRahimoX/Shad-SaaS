@@ -120,6 +120,13 @@
       "when": 1790846000000,
       "tag": "0017_drop_theme_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790847000000,
+      "tag": "0018_seed_branding_settings",
+      "breakpoints": true
     }
   ]
 }
