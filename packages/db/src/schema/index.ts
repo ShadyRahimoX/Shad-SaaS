@@ -16,3 +16,4 @@ export * from './referrals.js';
 export * from './notifications.js';
 export * from './sessions.js';
 export * from './chat.js';
+export * from './tickets.js';

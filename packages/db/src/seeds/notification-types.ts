@@ -11,6 +11,9 @@ export const DEFAULT_NOTIFICATION_TYPES = [
   { key: 'referral.commission', labelAr: 'عمولة إحالة جديدة', labelEn: 'New referral commission' },
   { key: 'vip.upgraded', labelAr: 'تم ترقيتك لمستوى VIP', labelEn: 'VIP upgraded' },
   { key: 'chat.message', labelAr: 'رسالة محادثة جديدة', labelEn: 'New chat message' },
+  { key: 'ticket.created', labelAr: 'تذكرة دعم جديدة', labelEn: 'New support ticket' },
+  { key: 'ticket.replied', labelAr: 'رد على تذكرة الدعم', labelEn: 'Ticket replied' },
+  { key: 'ticket.status_changed', labelAr: 'تحديث حالة التذكرة', labelEn: 'Ticket status changed' },
 ];
 
 export async function seedNotificationTypes() {
