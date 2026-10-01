@@ -47,7 +47,6 @@ adminTicketsRoutes.get('/', async (c) => {
 });
 
 // GET /api/admin/tickets/stream (SSE for admin)
-// Must be registered before /:ticketId to prevent route conflict!
 adminTicketsRoutes.get('/stream', async (c) => {
   c.header('Content-Type', 'text/event-stream');
   c.header('Cache-Control', 'no-cache');
@@ -136,6 +135,9 @@ adminTicketsRoutes.post('/:ticketId/messages', async (c) => {
     });
     return ok(c, result);
   } catch (error: any) {
+    if (error?.message?.includes('INVALID_MESSAGE_UUID_FORMAT')) {
+      return err(c, 'INVALID_MESSAGE_UUID_FORMAT', 'messageUuid must be a valid UUID v4', 400);
+    }
     if (error?.message?.includes('ADMIN_SEED_EMAIL')) {
       return err(c, 'ADMIN_USER_MISSING', 'Admin seed user not found in database', 500);
     }
@@ -197,7 +199,10 @@ adminTicketsRoutes.patch('/:ticketId/assign', async (c) => {
       return err(c, 'NOT_FOUND', 'Support ticket not found', 404);
     }
     return ok(c, result);
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes('ASSIGNED_USER_NOT_FOUND')) {
+      return err(c, 'ASSIGNED_USER_NOT_FOUND', 'Assigned user not found in database', 400);
+    }
     console.error('assignTicket error:', error);
     return err(c, 'ASSIGN_TICKET_FAILED', 'Failed to assign ticket', 500);
   }

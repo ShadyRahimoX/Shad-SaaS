@@ -158,6 +158,13 @@ export interface SendTicketMessageParams {
 export async function sendTicketMessage(params: SendTicketMessageParams) {
   const { ticketId, senderId, senderRole, body, messageUuid } = params;
 
+  // 0. UUID Format Check (before idempotency check)
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(messageUuid)) {
+    throw new Error('INVALID_MESSAGE_UUID_FORMAT');
+  }
+
+  // 1. Constrained idempotency check
   const [existingMsg] = await db
     .select()
     .from(ticketMessages)
@@ -486,6 +493,18 @@ export async function updateTicketStatus(ticketId: string, newStatus: string, ad
 }
 
 export async function assignTicket(ticketId: string, adminUserId: string | null) {
+  if (adminUserId !== null) {
+    const [existingUser] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, adminUserId))
+      .limit(1);
+
+    if (!existingUser) {
+      throw new Error('ASSIGNED_USER_NOT_FOUND');
+    }
+  }
+
   const [updated] = await db
     .update(tickets)
     .set({

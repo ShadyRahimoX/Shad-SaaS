@@ -78,6 +78,12 @@ export interface SendMessageParams {
 export async function sendMessage(params: SendMessageParams) {
   const { threadId, senderId, senderRole, body, messageUuid } = params;
 
+  // 0. UUID Format Check (before idempotency check)
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(messageUuid)) {
+    throw new Error('INVALID_MESSAGE_UUID_FORMAT');
+  }
+
   // 1. Constrained Idempotency check first (restricted to senderId + threadId + messageUuid)
   const [existingMsg] = await db
     .select()

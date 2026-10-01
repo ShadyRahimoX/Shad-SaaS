@@ -126,8 +126,10 @@ adminChatRoutes.post('/threads/:threadId/messages', async (c) => {
     });
     return ok(c, result);
   } catch (error: any) {
+    if (error?.message?.includes('INVALID_MESSAGE_UUID_FORMAT')) {
+      return err(c, 'INVALID_MESSAGE_UUID_FORMAT', 'messageUuid must be a valid UUID v4', 400);
+    }
     if (error?.message?.includes('ADMIN_SEED_EMAIL')) {
-      console.error('Admin user missing error:', error);
       return err(c, 'ADMIN_USER_MISSING', 'Admin seed user not found in database', 500);
     }
     if (error?.message?.includes('MESSAGE_UUID_TAKEN')) {
