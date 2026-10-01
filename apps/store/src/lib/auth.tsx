@@ -48,23 +48,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchCurrentUser = async () => {
+  const refreshUser = async () => {
     try {
       const res = await api.get<User>('/api/auth/me');
       if (res.success && res.data) {
         setUser(res.data);
-      } else {
-        setUser(null);
       }
-    } catch {
-      setUser(null);
+    } catch (err) {
+      console.error('refreshUser failed:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCurrentUser();
+    refreshUser();
   }, []);
 
   const login = async (usernameOrEmail: string, password: string) => {
@@ -133,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        refreshUser: fetchCurrentUser,
+        refreshUser,
       }}
     >
       {children}

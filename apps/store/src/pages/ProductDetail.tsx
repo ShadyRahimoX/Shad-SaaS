@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useRoute, useLocation } from 'wouter';
 import { productsApi, type Product, type Category } from '../lib/products';
 import { useAuth } from '../lib/auth';
+import { useCart } from '../lib/cart';
 import { useSettings } from '../lib/settings';
 import { formatCurrency } from '../lib/utils';
 import {
@@ -22,6 +23,7 @@ export const ProductDetail: React.FC = () => {
   const [, setLocation] = useLocation();
 
   const { user } = useAuth();
+  const { addItem } = useCart();
   const { settings } = useSettings();
   const currencySymbol = settings.site_currency_symbol || '$';
 
@@ -74,8 +76,21 @@ export const ProductDetail: React.FC = () => {
       setLocation('/login');
       return;
     }
-    // Temporary alert until H-d checkout is built
-    alert('عملية الشراء قيد التطوير — قادمة في مرحلة H-d!');
+
+    if (!product) return;
+
+    addItem({
+      productId: product.id,
+      name: product.name,
+      priceUsd: product.priceUsd,
+      imageUrl: product.imageUrl,
+      requiredFields: product.requiredFields,
+      minQty: product.minQty,
+      maxQty: product.maxQty,
+    });
+
+    alert('تمت الإضافة للسلة');
+    setLocation('/cart');
   };
 
   const handleFavorite = () => {
