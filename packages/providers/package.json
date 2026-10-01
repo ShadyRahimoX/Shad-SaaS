@@ -1,0 +1,16 @@
+{
+  "name": "@shad-saas/providers",
+  "version": "0.0.1-alpha",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@shad-saas/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}
