@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, numeric, timestamp, serial, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, numeric, timestamp, serial, index, jsonb } from 'drizzle-orm/pg-core';
 import { users } from './users.js';
 import { paymentMethods } from './payment_methods.js';
 import { admins } from './admins.js';
@@ -22,6 +22,7 @@ export const deposits = pgTable('deposits', {
   approvedVia: text('approved_via'),
   approvedBy: uuid('approved_by').references(() => admins.id),
   proofImageUrl: text('proof_image_url'),
+  providerResponse: jsonb('provider_response'),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
