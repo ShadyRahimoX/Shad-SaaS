@@ -1,6 +1,7 @@
 import { db, deposits, transactions, users } from '@shad-saas/db';
 import { eq } from 'drizzle-orm';
 import type { SamWebhookPayload } from '@shad-saas/providers';
+import { createNotification } from './notifications.service.js';
 
 export class WebhookError extends Error {
   constructor(public code: string, message: string, public statusCode = 400) {
@@ -96,6 +97,19 @@ export async function processInvoicePaid(payload: SamWebhookPayload) {
     return updated;
   });
 
+  // ⭐ Notification: deposit.approved
+  try {
+    await createNotification({
+      userId: user.id,
+      type: 'deposit.approved',
+      title: 'تمت الموافقة على الإيداع',
+      body: `تم إضافة $${amountUsd.toFixed(2)} لرصيدك بنجاح.`,
+      payload: { depositId: result.id, amountUsd },
+    });
+  } catch (err) {
+    console.error('[Notification] deposit.approved failed:', err);
+  }
+
   return {
     deposit: result,
     skipped: false,
@@ -131,6 +145,19 @@ export async function processInvoiceExpired(payload: SamWebhookPayload) {
     .set({ status: 'expired' })
     .where(eq(deposits.id, deposit.id))
     .returning();
+
+  // ⭐ Notification: deposit.rejected
+  try {
+    await createNotification({
+      userId: deposit.userId,
+      type: 'deposit.rejected',
+      title: 'انتهت صلاحية الإيداع',
+      body: `انتهت صلاحية طلب الإيداع بقيمة $${Number(deposit.amountUsd).toFixed(2)}.`,
+      payload: { depositId: updated.id },
+    });
+  } catch (err) {
+    console.error('[Notification] deposit.rejected failed:', err);
+  }
 
   return { deposit: updated, skipped: false };
 }

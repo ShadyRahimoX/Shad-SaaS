@@ -5,6 +5,7 @@ import { calculateVipPrice } from '@shad-saas/providers';
 import { type CreateOrderInput, MIN_ORDER_TOTAL_USD } from '@shad-saas/validators';
 import { autoUpgradeVip } from './vip.service.js';
 import { processReferralCommission } from './referrals.service.js';
+import { createNotification } from './notifications.service.js';
 
 export class OrderError extends Error {
   constructor(
@@ -189,6 +190,46 @@ export async function createOrder(ctx: CreateOrderContext) {
 
     return newOrder;
   });
+
+  // ⭐ Notification: order.created
+  try {
+    await createNotification({
+      userId,
+      type: 'order.created',
+      title: 'تم إنشاء طلب جديد',
+      body: `تم إنشاء طلبك #${result.displayId} بنجاح.`,
+      payload: { orderId: result.id, displayId: result.displayId, status: result.status },
+    });
+  } catch (err) {
+    console.error('[Notification] order.created failed:', err);
+  }
+
+  // ⭐ Notification: order.completed / order.failed
+  if (result.status === 'accept' || result.status === 'completed') {
+    try {
+      await createNotification({
+        userId,
+        type: 'order.completed',
+        title: 'اكتمل طلبك',
+        body: `تم تنفيذ طلبك #${result.displayId} بنجاح.`,
+        payload: { orderId: result.id, displayId: result.displayId },
+      });
+    } catch (err) {
+      console.error('[Notification] order.completed failed:', err);
+    }
+  } else if (result.status === 'rejected' || result.status === 'failed') {
+    try {
+      await createNotification({
+        userId,
+        type: 'order.failed',
+        title: 'فشل طلبك',
+        body: `لم نتمكن من تنفيذ طلبك #${result.displayId}.`,
+        payload: { orderId: result.id, displayId: result.displayId },
+      });
+    } catch (err) {
+      console.error('[Notification] order.failed failed:', err);
+    }
+  }
 
   // ⭐ بعد إتمام الطلب، حاول ترقية VIP تلقائياً
   try {

@@ -1,5 +1,6 @@
 import { db, users, referrals, referralCommissions, settings } from '@shad-saas/db';
 import { eq, and, desc, sql, asc } from 'drizzle-orm';
+import { createNotification } from './notifications.service.js';
 
 /**
  * يُعالج عمولة الإحالة عند نجاح طلب.
@@ -91,6 +92,19 @@ export async function processReferralCommission(params: {
       })
       .where(eq(referrals.id, referral.id));
   });
+
+  // ⭐ Notification: referral.commission
+  try {
+    await createNotification({
+      userId: referral.referrerId,
+      type: 'referral.commission',
+      title: 'عمولة إحالة جديدة',
+      body: `حصلت على عمولة قدرها $${commission.toFixed(4)} من عملية شراء لمستخدمك المُحال.`,
+      payload: { referralId: referral.id, orderId, commissionUsd: commission },
+    });
+  } catch (err) {
+    console.error('[Notification] referral.commission failed:', err);
+  }
 
   return {
     processed: true,

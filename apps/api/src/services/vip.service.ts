@@ -1,5 +1,6 @@
 import { db, users, vipLevels } from '@shad-saas/db';
 import { eq, desc, and, sql, asc } from 'drizzle-orm';
+import { createNotification } from './notifications.service.js';
 
 export interface VipInfo {
   level: number;
@@ -78,6 +79,19 @@ export async function autoUpgradeVip(userId: string): Promise<{
   await db.update(users)
     .set({ vipLevelId: eligible.id, updatedAt: new Date() })
     .where(eq(users.id, userId));
+
+  // ⭐ Notification: vip.upgraded
+  try {
+    await createNotification({
+      userId,
+      type: 'vip.upgraded',
+      title: 'تم ترقية مستواك في VIP!',
+      body: `مبارك! تم ترقيتك إلى المستوى ${eligible.name} بنجاح.`,
+      payload: { fromLevel: currentLevelNum, toLevel: eligible.levelNumber, levelName: eligible.name },
+    });
+  } catch (err) {
+    console.error('[Notification] vip.upgraded failed:', err);
+  }
 
   return {
     upgraded: true,
