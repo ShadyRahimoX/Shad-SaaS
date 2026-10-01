@@ -11,8 +11,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm --prefix apps/api run dev",
+    "dev": "sh -c '(cd apps/store && npx vite --host 0.0.0.0 --port 5173 &); npm --prefix apps/api run dev'",
     "dev:api": "npm --prefix apps/api run dev",
+    "dev:store": "npm --prefix apps/store run dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "db:generate": "pnpm --filter @shad-saas/db generate",

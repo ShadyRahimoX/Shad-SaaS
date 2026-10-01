@@ -1,12 +1,13 @@
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
+import crypto from 'crypto';
 import { registerSchema, loginSchema } from '@shad-saas/validators';
-import { signAccessToken, signRefreshToken, verifyRefreshToken, generateReferralCode } from '@shad-saas/utils';
+import { signAccessToken, signRefreshToken, verifyRefreshToken, verifyAccessToken, generateReferralCode, type TokenPayload } from '@shad-saas/utils';
 import { db, users, sessions, referrals } from '@shad-saas/db';
 import { eq, or } from 'drizzle-orm';
 import { ok, err } from '../lib/response.js';
 import { hashPassword, verifyPassword } from '../lib/password.js';
-import { requireAuth, type AuthVariables } from '../middleware/auth.js';
+import { type AuthVariables } from '../middleware/auth.js';
 import { rateLimiter } from '../middleware/rate-limit.js';
 import { getVipInfo } from '../services/vip.service.js';
 
@@ -20,6 +21,12 @@ function sanitizeUser(user: typeof users.$inferSelect) {
   const { passwordHash: _hash, totpSecret: _totp, ...safe } = user;
   return safe;
 }
+
+// GET /api/auth/csrf-token
+authRoutes.get('/csrf-token', (c) => {
+  const csrfToken = crypto.randomUUID();
+  return ok(c, { csrfToken });
+});
 
 // POST /api/auth/register
 authRoutes.post('/register', async (c) => {
@@ -46,7 +53,6 @@ authRoutes.post('/register', async (c) => {
       return err(c, 'USER_EXISTS', 'Username or email already exists', 409);
     }
 
-    // ⭐ معالجة كود الإحالة
     let referrerUser = null;
     if (referralCode) {
       const [referrer] = await db
@@ -77,7 +83,6 @@ authRoutes.post('/register', async (c) => {
         })
         .returning();
 
-      // إذا كان هناك referrer وحماية من الذاتية
       if (referrerUser && referrerUser.id !== createdUser.id) {
         const defaultCommission = 5; // %
         await tx.insert(referrals).values({
@@ -108,10 +113,11 @@ authRoutes.post('/register', async (c) => {
       return { newUser: createdUser, accessToken: accessTok, refreshToken: refreshTok };
     });
 
-    setCookie(c, 'refreshToken', refreshToken, {
+    setCookie(c, 'refresh_token', refreshToken, {
       httpOnly: true,
-      secure: false,
-      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/api/auth',
       maxAge: 30 * 24 * 60 * 60,
     });
 
@@ -120,7 +126,6 @@ authRoutes.post('/register', async (c) => {
       {
         user: sanitizeUser(newUser),
         accessToken,
-        refreshToken,
       },
       201
     );
@@ -186,17 +191,17 @@ authRoutes.post('/login', async (c) => {
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
 
-    setCookie(c, 'refreshToken', refreshToken, {
+    setCookie(c, 'refresh_token', refreshToken, {
       httpOnly: true,
-      secure: false,
-      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/api/auth',
       maxAge: 30 * 24 * 60 * 60,
     });
 
     return ok(c, {
       user: sanitizeUser(foundUser),
       accessToken,
-      refreshToken,
     });
   } catch (error) {
     console.error('Login database error:', error);
@@ -206,9 +211,9 @@ authRoutes.post('/login', async (c) => {
 
 // POST /api/auth/refresh
 authRoutes.post('/refresh', async (c) => {
-  const cookieToken = getCookie(c, 'refreshToken');
+  const cookieToken = getCookie(c, 'refresh_token') || getCookie(c, 'refreshToken');
   const body = await c.req.json().catch(() => ({}));
-  const token = cookieToken || body.refreshToken;
+  const token = cookieToken || body?.refreshToken;
 
   if (!token) {
     return err(c, 'UNAUTHORIZED', 'No refresh token provided', 401);
@@ -245,7 +250,7 @@ authRoutes.post('/refresh', async (c) => {
 
 // POST /api/auth/logout
 authRoutes.post('/logout', async (c) => {
-  const token = getCookie(c, 'refreshToken');
+  const token = getCookie(c, 'refresh_token') || getCookie(c, 'refreshToken');
   if (token) {
     try {
       const payload = verifyRefreshToken<{ userId: string }>(token);
@@ -260,13 +265,46 @@ authRoutes.post('/logout', async (c) => {
     }
   }
 
+  deleteCookie(c, 'refresh_token', { path: '/api/auth' });
   deleteCookie(c, 'refreshToken', { path: '/' });
   return c.body(null, 204);
 });
 
-// GET /api/auth/me (protected)
-authRoutes.get('/me', requireAuth, async (c) => {
-  const userId = c.get('userId');
+// GET /api/auth/me (authenticated via Bearer accessToken OR refresh_token cookie)
+authRoutes.get('/me', async (c) => {
+  let userId: string | null = null;
+
+  // 1. Bearer header
+  const authHeader = c.req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const payload = verifyAccessToken<TokenPayload>(authHeader.substring(7).trim());
+      if (payload?.userId) {
+        userId = payload.userId;
+      }
+    } catch {
+      // fallback to cookie
+    }
+  }
+
+  // 2. Cookie fallback
+  if (!userId) {
+    const cookieToken = getCookie(c, 'refresh_token') || getCookie(c, 'refreshToken');
+    if (cookieToken) {
+      try {
+        const payload = verifyRefreshToken<{ userId: string }>(cookieToken);
+        if (payload?.userId) {
+          userId = payload.userId;
+        }
+      } catch {
+        // invalid cookie
+      }
+    }
+  }
+
+  if (!userId) {
+    return err(c, 'UNAUTHORIZED', 'Missing or invalid authorization', 401);
+  }
 
   try {
     const [user] = await db
