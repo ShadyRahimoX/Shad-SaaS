@@ -6,6 +6,8 @@ import { SettingsProvider } from './lib/settings';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
+import { CategoryPage } from './pages/Category';
+import { ProductDetail } from './pages/ProductDetail';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { About } from './pages/About';
@@ -31,6 +33,8 @@ export const App: React.FC = () => {
                 <Layout>
                   <Switch>
                     <Route path="/" component={Home} />
+                    <Route path="/category/:slug" component={CategoryPage} />
+                    <Route path="/product/:slug" component={ProductDetail} />
                     <Route path="/about" component={About} />
                     <Route path="/orders" component={Orders} />
                     <Route path="/wallet" component={Wallet} />
