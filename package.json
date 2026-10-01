@@ -11,7 +11,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "sh -c '(cd apps/store && npx vite --host 0.0.0.0 --port 5173 &); npm --prefix apps/api run dev'",
+    "dev": "node scripts/dev.mjs",
     "dev:api": "npm --prefix apps/api run dev",
     "dev:store": "npm --prefix apps/store run dev",
     "build": "pnpm -r build",

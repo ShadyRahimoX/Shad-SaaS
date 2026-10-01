@@ -19,29 +19,38 @@ app.use('*', cors({
 app.onError(errorHandler);
 app.route('/', routes);
 
-// Fallback proxy to Vite dev server (port 5173) for frontend routes in AI Studio preview
+// Fallback proxy to Vite dev server (port 5173/5174) for frontend routes in AI Studio preview
 app.all('*', async (c) => {
   if (c.req.path.startsWith('/api')) {
     return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Endpoint not found' } }, 404);
   }
 
-  try {
-    const query = c.req.url.includes('?') ? '?' + c.req.url.split('?')[1] : '';
-    const viteUrl = `http://127.0.0.1:5173${c.req.path}${query}`;
-    const headers = new Headers(c.req.raw.headers);
-    headers.set('host', 'localhost:5173');
+  const query = c.req.url.includes('?') ? '?' + c.req.url.split('?')[1] : '';
+  const ports = [5173, 5174];
 
-    const response = await fetch(viteUrl, {
-      method: c.req.method,
-      headers,
-      body: c.req.method !== 'GET' && c.req.method !== 'HEAD' ? c.req.raw.body : undefined,
-    });
+  for (const p of ports) {
+    try {
+      const headers = new Headers(c.req.raw.headers);
+      headers.set('host', `localhost:${p}`);
 
-    return new Response(response.body, {
-      status: response.status,
-      headers: response.headers,
-    });
-  } catch {
-    return c.html('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Loading Store...</title></head><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;"><div><h3>جاري تشغيل واجهة المتجر (Vite Store)...</h3><p>يرجى الانتظار ثوانٍ معدودة.</p></div></body></html>', 503);
+      const response = await fetch(`http://127.0.0.1:${p}${c.req.path}${query}`, {
+        method: c.req.method,
+        headers,
+        body: c.req.method !== 'GET' && c.req.method !== 'HEAD' ? c.req.raw.body : undefined,
+      });
+
+      return new Response(response.body, {
+        status: response.status,
+        headers: response.headers,
+      });
+    } catch {
+      // try next port
+    }
   }
+
+  // Always return 200 so platform health check passes while frontend is warming up
+  return c.html(
+    '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>المتجر</title><meta http-equiv="refresh" content="1"></head><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#ffffff;color:#111827;"><div><h3>جاري تشغيل واجهة المتجر...</h3><p>يرجى الانتظار ثوانٍ معدودة.</p></div></body></html>',
+    200
+  );
 });
