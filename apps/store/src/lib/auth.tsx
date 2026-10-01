@@ -12,6 +12,7 @@ export interface User {
   country?: string | null;
   avatarUrl?: string | null;
   balanceUsd: string;
+  totalSpentUsd?: string;
   referralCode?: string;
   vip?: {
     level: number;

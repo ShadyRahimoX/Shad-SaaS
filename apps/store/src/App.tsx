@@ -18,6 +18,8 @@ import { Register } from './pages/Register';
 import { About } from './pages/About';
 import { Wallet } from './pages/Wallet';
 import { Deposits } from './pages/Deposits';
+import { Deposit } from './pages/Deposit';
+import { DepositInvoice } from './pages/DepositInvoice';
 import { Profile } from './pages/Profile';
 import { NotFound } from './pages/NotFound';
 
@@ -47,6 +49,8 @@ export const App: React.FC = () => {
                       <Route path="/about" component={About} />
                       <Route path="/wallet" component={Wallet} />
                       <Route path="/wallet/deposits" component={Deposits} />
+                      <Route path="/wallet/deposit/invoice/:id" component={DepositInvoice} />
+                      <Route path="/wallet/deposit/:code" component={Deposit} />
                       <Route path="/profile" component={Profile} />
                       <Route component={NotFound} />
                     </Switch>

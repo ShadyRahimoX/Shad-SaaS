@@ -11,12 +11,26 @@ export function formatCurrency(usdValue: string | number, symbol = '$'): string 
   return `${symbol}${n.toFixed(2)}`;
 }
 
-export function formatDate(date: string | Date | null | undefined): string {
+export function formatDate(date: string | Date | null | undefined, withTime = true): string {
   if (!date) return '-';
   const d = new Date(date);
-  return new Intl.DateTimeFormat('ar-SA', {
+  if (isNaN(d.getTime())) return '-';
+  const dateStr = d.toLocaleDateString('ar-SY', {
     year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(d);
+    month: '2-digit',
+    day: '2-digit',
+  });
+  if (!withTime) return dateStr;
+  const timeStr = d.toLocaleTimeString('ar-SY', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${dateStr} ${timeStr}`;
+}
+
+export function formatCountdown(secondsRemaining: number): string {
+  const s = Math.max(0, Math.floor(secondsRemaining));
+  const min = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 }
