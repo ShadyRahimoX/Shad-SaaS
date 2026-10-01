@@ -1,6 +1,0 @@
-{
-  "name": "Shad-SaaS",
-  "description": "Multi-tenant SaaS platform for digital store copies.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

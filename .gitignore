@@ -1,5 +1,41 @@
+# Dependencies
 node_modules
+
+# Build outputs
 dist
-.env
+build
 .tmp
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Lock files
+bun.lock
+bun.lockb
+package-lock.json
+yarn.lock
+
+# Drizzle
 drizzle/meta
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+
+# Claude / AI Studio metadata
+metadata.json
+
+# Google AI Studio
+.gemini/
