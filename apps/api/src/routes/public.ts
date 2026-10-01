@@ -1,9 +1,39 @@
 import { Hono } from 'hono';
-import { db, products, categories } from '@shad-saas/db';
+import { db, products, categories, paymentMethods } from '@shad-saas/db';
 import { eq, and, ilike, sql } from 'drizzle-orm';
 import { ok, err } from '../lib/response.js';
 
 export const publicRoutes = new Hono();
+
+// GET /api/public/deposit-methods
+publicRoutes.get('/deposit-methods', async (c) => {
+  const rows = await db
+    .select()
+    .from(paymentMethods)
+    .where(eq(paymentMethods.active, true))
+    .orderBy(paymentMethods.sortOrder, paymentMethods.name);
+
+  const formatted = rows.map((m) => {
+    const cfg = (m.config as Record<string, any>) || {};
+    return {
+      id: m.id,
+      code: m.code,
+      name: m.name,
+      nameEn: m.code,
+      type: m.type,
+      uiLayout: cfg.ui_layout || 'account',
+      iconUrl: m.iconUrl,
+      minAmountUsd: m.minAmountUsd,
+      currencies: m.allowedCurrencies || ['USD'],
+      discountPercent: 0,
+      vipOnly: false,
+      instructions: m.instructions,
+      requiredFields: m.requiredFields || [],
+    };
+  });
+
+  return ok(c, formatted);
+});
 
 publicRoutes.get('/categories', async (c) => {
   const rows = await db
