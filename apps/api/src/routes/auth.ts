@@ -1,13 +1,14 @@
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { registerSchema, loginSchema } from '@shad-saas/validators';
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '@shad-saas/utils';
-import { db, users, sessions } from '@shad-saas/db';
+import { signAccessToken, signRefreshToken, verifyRefreshToken, generateReferralCode } from '@shad-saas/utils';
+import { db, users, sessions, referrals } from '@shad-saas/db';
 import { eq, or } from 'drizzle-orm';
 import { ok, err } from '../lib/response.js';
 import { hashPassword, verifyPassword } from '../lib/password.js';
 import { requireAuth, type AuthVariables } from '../middleware/auth.js';
 import { rateLimiter } from '../middleware/rate-limit.js';
+import { getVipInfo } from '../services/vip.service.js';
 
 export const authRoutes = new Hono<{ Variables: AuthVariables }>();
 
@@ -32,7 +33,7 @@ authRoutes.post('/register', async (c) => {
     return err(c, 'VALIDATION_ERROR', result.error.errors.map((e) => e.message).join(', '), 400);
   }
 
-  const { username, email, password, firstName, lastName, phone, country } = result.data;
+  const { username, email, password, firstName, lastName, phone, country, referralCode } = result.data;
 
   try {
     const existing = await db
@@ -45,8 +46,19 @@ authRoutes.post('/register', async (c) => {
       return err(c, 'USER_EXISTS', 'Username or email already exists', 409);
     }
 
+    // ⭐ معالجة كود الإحالة
+    let referrerUser = null;
+    if (referralCode) {
+      const [referrer] = await db
+        .select({ id: users.id, username: users.username, referralCode: users.referralCode })
+        .from(users)
+        .where(eq(users.referralCode, referralCode.toUpperCase()))
+        .limit(1);
+      referrerUser = referrer || null;
+    }
+
     const hashedPassword = await hashPassword(password);
-    const referralCode = 'REF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const ownReferralCode = generateReferralCode();
 
     const { newUser, accessToken, refreshToken } = await db.transaction(async (tx) => {
       const [createdUser] = await tx
@@ -59,10 +71,22 @@ authRoutes.post('/register', async (c) => {
           lastName: lastName || null,
           phone: phone || null,
           country: country || null,
-          referralCode,
+          referralCode: ownReferralCode,
+          referredBy: referrerUser?.id || null,
           balanceUsd: '0.00',
         })
         .returning();
+
+      // إذا كان هناك referrer وحماية من الذاتية
+      if (referrerUser && referrerUser.id !== createdUser.id) {
+        const defaultCommission = 5; // %
+        await tx.insert(referrals).values({
+          referrerId: referrerUser.id,
+          referredUserId: createdUser.id,
+          referralCode: referralCode!.toUpperCase(),
+          commissionPercent: defaultCommission.toFixed(2),
+        });
+      }
 
       const accessTok = signAccessToken({
         userId: createdUser.id,
@@ -255,7 +279,12 @@ authRoutes.get('/me', requireAuth, async (c) => {
       return err(c, 'NOT_FOUND', 'User not found', 404);
     }
 
-    return ok(c, sanitizeUser(user));
+    const vipInfo = await getVipInfo(userId);
+
+    return ok(c, {
+      ...sanitizeUser(user),
+      vip: vipInfo,
+    });
   } catch (error) {
     console.error('Fetch user database error:', error);
     return err(c, 'DB_ERROR', 'Database error', 500);
