@@ -13,6 +13,8 @@ import { meTicketsRoutes } from './me-tickets.js';
 import { adminTicketsRoutes } from './admin-tickets.js';
 import { adminSettingsRoutes } from './admin-settings.js';
 import { publicSettingsRoutes } from './public-settings.js';
+import { adminThemesRoutes } from './admin-themes.js';
+import { publicThemesRoutes } from './public-themes.js';
 
 export const routes = new Hono();
 
@@ -31,8 +33,10 @@ routes.route('/api/me', meRoutes);
 routes.route('/api/admin/chat', adminChatRoutes);
 routes.route('/api/admin/tickets', adminTicketsRoutes);
 routes.route('/api/admin/settings', adminSettingsRoutes);
+routes.route('/api/admin/themes', adminThemesRoutes);
 routes.route('/api/admin', adminRoutes);
 routes.route('/api/public/settings', publicSettingsRoutes);
+routes.route('/api/public/theme', publicThemesRoutes);
 routes.route('/api/public', publicRoutes);
 routes.route('/api/orders', ordersRoutes);
 routes.route('/api/deposits', depositsRoutes);
