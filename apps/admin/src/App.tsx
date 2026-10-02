@@ -6,6 +6,7 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Orders } from './pages/Orders';
 import { OrderDetail } from './pages/OrderDetail';
+import { Categories } from './pages/Categories';
 import * as PH from './pages/_placeholders';
 
 const AdminApp: React.FC = () => {
@@ -30,7 +31,7 @@ const AdminApp: React.FC = () => {
         <Route path="/orders" component={Orders} />
         <Route path="/orders/:id" component={OrderDetail} />
         <Route path="/disputes" component={PH.AdminDisputes} />
-        <Route path="/categories" component={PH.AdminCategories} />
+        <Route path="/categories" component={Categories} />
         <Route path="/products/add" component={PH.AdminProductsAdd} />
         <Route path="/products" component={PH.AdminProducts} />
         <Route path="/inventory" component={PH.AdminInventory} />
