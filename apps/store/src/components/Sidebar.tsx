@@ -22,6 +22,8 @@ import {
   PhoneCall,
   Crown,
   Coins,
+  MessageCircle,
+  Ticket,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -231,6 +233,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                 >
                   <ShoppingBag className="w-4 h-4 text-amber-500" />
                   <span>طلباتي</span>
+                </Link>
+
+                {/* 6 - Chat */}
+                <Link
+                  data-sidebar-item="chat"
+                  href="/chat"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted text-foreground transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-500" />
+                  <span>الدعم المباشر</span>
+                </Link>
+
+                {/* 7 - Tickets */}
+                <Link
+                  data-sidebar-item="tickets"
+                  href="/tickets"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted text-foreground transition-colors"
+                >
+                  <Ticket className="w-4 h-4 text-blue-500" />
+                  <span>تذاكر الدعم</span>
                 </Link>
 
                 {/* 6 */}

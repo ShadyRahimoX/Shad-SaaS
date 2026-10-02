@@ -25,6 +25,9 @@ import { Profile } from './pages/Profile';
 import { ProfileEdit } from './pages/ProfileEdit';
 import { Referrals } from './pages/Referrals';
 import { Notifications } from './pages/Notifications';
+import { Chat } from './pages/Chat';
+import { Tickets } from './pages/Tickets';
+import { TicketDetail } from './pages/TicketDetail';
 import { NotFound } from './pages/NotFound';
 
 export const App: React.FC = () => {
@@ -60,6 +63,9 @@ export const App: React.FC = () => {
                         <Route path="/profile/edit" component={ProfileEdit} />
                         <Route path="/referrals" component={Referrals} />
                         <Route path="/notifications" component={Notifications} />
+                        <Route path="/chat" component={Chat} />
+                        <Route path="/tickets" component={Tickets} />
+                        <Route path="/tickets/:id" component={TicketDetail} />
                         <Route component={NotFound} />
                       </Switch>
                     </Layout>
