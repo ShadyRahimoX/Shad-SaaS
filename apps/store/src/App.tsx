@@ -4,6 +4,7 @@ import { AuthProvider } from './lib/auth';
 import { ThemeProvider } from './lib/theme';
 import { SettingsProvider } from './lib/settings';
 import { CartProvider } from './lib/cart';
+import { NotificationsProvider } from './lib/notifications';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
@@ -23,6 +24,7 @@ import { DepositInvoice } from './pages/DepositInvoice';
 import { Profile } from './pages/Profile';
 import { ProfileEdit } from './pages/ProfileEdit';
 import { Referrals } from './pages/Referrals';
+import { Notifications } from './pages/Notifications';
 import { NotFound } from './pages/NotFound';
 
 export const App: React.FC = () => {
@@ -31,37 +33,40 @@ export const App: React.FC = () => {
       <SettingsProvider>
         <ThemeProvider>
           <AuthProvider>
-            <CartProvider>
-              <Switch>
-                {/* Standalone pages without Layout header/footer */}
-                <Route path="/login" component={Login} />
-                <Route path="/register" component={Register} />
+            <NotificationsProvider>
+              <CartProvider>
+                <Switch>
+                  {/* Standalone pages without Layout header/footer */}
+                  <Route path="/login" component={Login} />
+                  <Route path="/register" component={Register} />
 
-                {/* Main App routes wrapped in Layout */}
-                <Route>
-                  <Layout>
-                    <Switch>
-                      <Route path="/" component={Home} />
-                      <Route path="/category/:slug" component={CategoryPage} />
-                      <Route path="/product/:slug" component={ProductDetail} />
-                      <Route path="/cart" component={Cart} />
-                      <Route path="/checkout" component={Checkout} />
-                      <Route path="/orders" component={Orders} />
-                      <Route path="/orders/:id" component={OrderDetail} />
-                      <Route path="/about" component={About} />
-                      <Route path="/wallet" component={Wallet} />
-                      <Route path="/wallet/deposits" component={Deposits} />
-                      <Route path="/wallet/deposit/invoice/:id" component={DepositInvoice} />
-                      <Route path="/wallet/deposit/:code" component={Deposit} />
-                      <Route path="/profile" component={Profile} />
-                      <Route path="/profile/edit" component={ProfileEdit} />
-                      <Route path="/referrals" component={Referrals} />
-                      <Route component={NotFound} />
-                    </Switch>
-                  </Layout>
-                </Route>
-              </Switch>
-            </CartProvider>
+                  {/* Main App routes wrapped in Layout */}
+                  <Route>
+                    <Layout>
+                      <Switch>
+                        <Route path="/" component={Home} />
+                        <Route path="/category/:slug" component={CategoryPage} />
+                        <Route path="/product/:slug" component={ProductDetail} />
+                        <Route path="/cart" component={Cart} />
+                        <Route path="/checkout" component={Checkout} />
+                        <Route path="/orders" component={Orders} />
+                        <Route path="/orders/:id" component={OrderDetail} />
+                        <Route path="/about" component={About} />
+                        <Route path="/wallet" component={Wallet} />
+                        <Route path="/wallet/deposits" component={Deposits} />
+                        <Route path="/wallet/deposit/invoice/:id" component={DepositInvoice} />
+                        <Route path="/wallet/deposit/:code" component={Deposit} />
+                        <Route path="/profile" component={Profile} />
+                        <Route path="/profile/edit" component={ProfileEdit} />
+                        <Route path="/referrals" component={Referrals} />
+                        <Route path="/notifications" component={Notifications} />
+                        <Route component={NotFound} />
+                      </Switch>
+                    </Layout>
+                  </Route>
+                </Switch>
+              </CartProvider>
+            </NotificationsProvider>
           </AuthProvider>
         </ThemeProvider>
       </SettingsProvider>

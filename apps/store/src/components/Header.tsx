@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'wouter';
 import { useAuth } from '../lib/auth';
 import { useSettings } from '../lib/settings';
+import { useNotifications } from '../lib/notifications';
 import { Menu, Bell, User as UserIcon, Wallet } from 'lucide-react';
 
 interface HeaderProps {
@@ -11,6 +12,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user } = useAuth();
   const { settings } = useSettings();
+  const { unreadCount } = useNotifications();
 
   const formattedBalance = user?.balanceUsd
     ? `$${parseFloat(user.balanceUsd).toFixed(3)}`
@@ -51,15 +53,22 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              {/* Notification icon with badge */}
-              <button
-                type="button"
-                className="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+              {/* Notification icon with dynamic live badge */}
+              <Link
+                href="/notifications"
+                className="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer flex items-center justify-center"
                 title="الإشعارات"
               >
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              </button>
+                {unreadCount > 0 && (
+                  <span
+                    data-unread-badge
+                    className="absolute top-1 right-1 px-1 min-w-[16px] h-4 rounded-full bg-destructive text-destructive-foreground font-black text-[9px] flex items-center justify-center leading-none shadow-xs"
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </Link>
 
               {/* Profile icon */}
               <Link
@@ -72,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </>
           ) : null}
 
-          {/* Menu button (opens Sidebar) - In logged-out, this is the ONLY action, matching Image #1 */}
+          {/* Menu button (opens Sidebar) */}
           <button
             type="button"
             onClick={onMenuClick}
@@ -87,3 +96,5 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     </header>
   );
 };
+
+export default Header;
