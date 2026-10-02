@@ -7,6 +7,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Orders } from './pages/Orders';
 import { OrderDetail } from './pages/OrderDetail';
 import { Categories } from './pages/Categories';
+import { Products } from './pages/Products';
 import * as PH from './pages/_placeholders';
 
 const AdminApp: React.FC = () => {
@@ -33,7 +34,7 @@ const AdminApp: React.FC = () => {
         <Route path="/disputes" component={PH.AdminDisputes} />
         <Route path="/categories" component={Categories} />
         <Route path="/products/add" component={PH.AdminProductsAdd} />
-        <Route path="/products" component={PH.AdminProducts} />
+        <Route path="/products" component={Products} />
         <Route path="/inventory" component={PH.AdminInventory} />
         <Route path="/payment-methods" component={PH.AdminPaymentMethods} />
         <Route path="/shipping-requests" component={PH.AdminShippingRequests} />
