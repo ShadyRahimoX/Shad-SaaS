@@ -4,6 +4,8 @@ import { AdminKeyProvider, useAdminKey } from './lib/adminKey';
 import { AdminKeyGate } from './components/AdminKeyGate';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
+import { Orders } from './pages/Orders';
+import { OrderDetail } from './pages/OrderDetail';
 import * as PH from './pages/_placeholders';
 
 const AdminApp: React.FC = () => {
@@ -25,7 +27,8 @@ const AdminApp: React.FC = () => {
     <Layout>
       <Switch>
         <Route path="/" component={Dashboard} />
-        <Route path="/orders" component={PH.AdminOrders} />
+        <Route path="/orders" component={Orders} />
+        <Route path="/orders/:id" component={OrderDetail} />
         <Route path="/disputes" component={PH.AdminDisputes} />
         <Route path="/categories" component={PH.AdminCategories} />
         <Route path="/products/add" component={PH.AdminProductsAdd} />
