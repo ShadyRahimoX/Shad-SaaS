@@ -1,14 +1,18 @@
 import React from 'react';
+import { Route, Switch } from 'wouter';
 import { AdminKeyProvider, useAdminKey } from './lib/adminKey';
 import { AdminKeyGate } from './components/AdminKeyGate';
+import { Layout } from './components/Layout';
+import { Dashboard } from './pages/Dashboard';
+import * as PH from './pages/_placeholders';
 
 const AdminApp: React.FC = () => {
-  const { adminKey, isReady, clearAdminKey } = useAdminKey();
+  const { adminKey, isReady } = useAdminKey();
 
   if (!isReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <span className="text-sm text-muted-foreground font-bold">جاري التحميل...</span>
+        <span className="text-sm font-bold text-muted-foreground">جاري التحميل...</span>
       </div>
     );
   }
@@ -18,28 +22,40 @@ const AdminApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-8" dir="rtl">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-black">لوحة الإدارة</h1>
-          <button
-            type="button"
-            onClick={clearAdminKey}
-            className="px-4 py-2 rounded-xl bg-destructive/10 hover:bg-destructive/20 text-destructive text-xs font-bold transition-colors cursor-pointer"
-          >
-            تسجيل الخروج
-          </button>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          ✅ تم قبول المفتاح بنجاح. سيتم بناء الـ Layout والـ Dashboard الكاملة في المرحلة I-a-2.
-        </p>
-        <div className="p-6 rounded-2xl bg-card border border-border space-y-2">
-          <p className="text-xs text-muted-foreground">
-            المفتاح المخزّن: <span className="font-mono font-bold text-foreground" dir="ltr">{adminKey.slice(0, 8)}...</span>
-          </p>
-        </div>
-      </div>
-    </div>
+    <Layout>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/orders" component={PH.AdminOrders} />
+        <Route path="/disputes" component={PH.AdminDisputes} />
+        <Route path="/categories" component={PH.AdminCategories} />
+        <Route path="/products/add" component={PH.AdminProductsAdd} />
+        <Route path="/products" component={PH.AdminProducts} />
+        <Route path="/inventory" component={PH.AdminInventory} />
+        <Route path="/payment-methods" component={PH.AdminPaymentMethods} />
+        <Route path="/shipping-requests" component={PH.AdminShippingRequests} />
+        <Route path="/store-cards" component={PH.AdminStoreCards} />
+        <Route path="/vip-profit" component={PH.AdminVipProfit} />
+        <Route path="/currencies" component={PH.AdminCurrencies} />
+        <Route path="/profit-log" component={PH.AdminProfitLog} />
+        <Route path="/users" component={PH.AdminUsers} />
+        <Route path="/debts" component={PH.AdminDebts} />
+        <Route path="/top-spenders" component={PH.AdminTopSpenders} />
+        <Route path="/agents" component={PH.AdminAgents} />
+        <Route path="/referrals" component={PH.AdminReferrals} />
+        <Route path="/vip-members" component={PH.AdminVipMembers} />
+        <Route path="/send-notification" component={PH.AdminSendNotification} />
+        <Route path="/providers" component={PH.AdminProviders} />
+        <Route path="/product-import" component={PH.AdminProductImport} />
+        <Route path="/api-clients" component={PH.AdminApiClients} />
+        <Route path="/design" component={PH.AdminDesign} />
+        <Route path="/order-messages" component={PH.AdminOrderMessages} />
+        <Route path="/sorting" component={PH.AdminSorting} />
+        <Route path="/contact" component={PH.AdminContact} />
+        <Route path="/accounts" component={PH.AdminAccounts} />
+        <Route path="/2fa" component={PH.AdminTwoFA} />
+        <Route component={PH.AdminOrders} />
+      </Switch>
+    </Layout>
   );
 };
 
