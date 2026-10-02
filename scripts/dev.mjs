@@ -45,6 +45,14 @@ const storeChild = startProcess(
   path.join(rootDir, 'apps/store')
 );
 
+// 3. Start Admin Vite dev server (port 5174)
+const adminChild = startProcess(
+  'ADMIN',
+  'npm',
+  ['run', 'dev'],
+  path.join(rootDir, 'apps/admin')
+);
+
 const shutdown = () => {
   console.log('Shutting down dev processes...');
   children.forEach((c) => {
