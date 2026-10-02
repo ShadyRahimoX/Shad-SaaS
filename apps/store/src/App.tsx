@@ -21,6 +21,8 @@ import { Deposits } from './pages/Deposits';
 import { Deposit } from './pages/Deposit';
 import { DepositInvoice } from './pages/DepositInvoice';
 import { Profile } from './pages/Profile';
+import { ProfileEdit } from './pages/ProfileEdit';
+import { Referrals } from './pages/Referrals';
 import { NotFound } from './pages/NotFound';
 
 export const App: React.FC = () => {
@@ -52,6 +54,8 @@ export const App: React.FC = () => {
                       <Route path="/wallet/deposit/invoice/:id" component={DepositInvoice} />
                       <Route path="/wallet/deposit/:code" component={Deposit} />
                       <Route path="/profile" component={Profile} />
+                      <Route path="/profile/edit" component={ProfileEdit} />
+                      <Route path="/referrals" component={Referrals} />
                       <Route component={NotFound} />
                     </Switch>
                   </Layout>
