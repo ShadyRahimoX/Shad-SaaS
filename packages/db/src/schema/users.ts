@@ -16,7 +16,7 @@ export const users = pgTable('users', {
   country: text('country'),
   avatarUrl: text('avatar_url'),
   vipLevelId: uuid('vip_level_id').references(() => vipLevels.id),
-  balanceUsd: numeric('balance_usd', { precision: 14, scale: 2 }).default('0.00').notNull(),
+  balanceUsd: numeric('balance_usd', { precision: 20, scale: 10 }).default('0.0000000000').notNull(),
   referralCode: text('referral_code').unique(),
   referredBy: uuid('referred_by').references((): AnyPgColumn => users.id),
   emailVerified: boolean('email_verified').default(false).notNull(),
