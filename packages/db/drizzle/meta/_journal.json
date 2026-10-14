@@ -134,6 +134,13 @@
       "when": 1790848000000,
       "tag": "0019_inventory_stock",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1790849000000,
+      "tag": "0020_agents_debts",
+      "breakpoints": true
     }
   ]
 }

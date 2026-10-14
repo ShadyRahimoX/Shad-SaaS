@@ -25,6 +25,8 @@ export const users = pgTable('users', {
   totalSpentUsd: numeric('total_spent_usd', { precision: 20, scale: 10 }).default('0.0000000000').notNull(),
   cashbackBalanceUsd: numeric('cashback_balance_usd', { precision: 20, scale: 10 }).default('0.0000000000').notNull(),
   referralBalanceUsd: numeric('referral_balance_usd', { precision: 20, scale: 10 }).default('0.0000000000').notNull(),
+  creditEnabled: boolean('credit_enabled').default(false).notNull(),
+  creditLimit: numeric('credit_limit', { precision: 20, scale: 10 }).default('0.0000000000').notNull(),
   vipIsManual: boolean('vip_is_manual').default(false).notNull(),
   lastLoginAt: timestamp('last_login_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

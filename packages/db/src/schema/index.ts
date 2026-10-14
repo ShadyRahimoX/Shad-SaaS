@@ -17,3 +17,5 @@ export * from './sessions.js';
 export * from './chat.js';
 export * from './tickets.js';
 export * from './themes.js';
+export * from './agents.js';
+export * from './debts.js';
