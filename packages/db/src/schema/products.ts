@@ -16,6 +16,7 @@ export const products = pgTable('products', {
   qtyOptions: jsonb('qty_options'),
   requiredFields: jsonb('required_fields').default([]).notNull(),
   available: boolean('available').default(true).notNull(),
+  stock: integer('stock'),
   sortOrder: integer('sort_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

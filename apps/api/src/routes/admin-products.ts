@@ -44,6 +44,7 @@ const createProductSchema = z.object({
     .optional()
     .nullable(),
   available: z.boolean().optional(),
+  stock: z.union([z.number().int().min(0), z.null()]).optional(),
   sortOrder: z.number().int().min(0).optional(),
 });
 
@@ -73,6 +74,7 @@ const updateProductSchema = z.object({
     .optional()
     .nullable(),
   available: z.boolean().optional(),
+  stock: z.union([z.number().int().min(0), z.null()]).optional(),
   sortOrder: z.number().int().min(0).optional(),
 });
 
@@ -178,6 +180,7 @@ adminProductsRoutes.get('/', async (c) => {
         requiredFields: products.requiredFields,
         qtyOptions: products.qtyOptions,
         available: products.available,
+        stock: products.stock,
         sortOrder: products.sortOrder,
         ordersCount: sql<number>`(SELECT count(*)::int FROM ${orders} o WHERE o.product_id = ${products.id})`,
         createdAt: products.createdAt,
@@ -237,6 +240,7 @@ adminProductsRoutes.get('/:id', async (c) => {
         requiredFields: products.requiredFields,
         qtyOptions: products.qtyOptions,
         available: products.available,
+        stock: products.stock,
         sortOrder: products.sortOrder,
         ordersCount: sql<number>`(SELECT count(*)::int FROM ${orders} o WHERE o.product_id = ${products.id})`,
         createdAt: products.createdAt,
@@ -313,6 +317,7 @@ adminProductsRoutes.post('/', async (c) => {
         qtyOptions: data.qtyOptions ?? null,
         requiredFields: data.requiredFields ?? [],
         available: data.available ?? true,
+        stock: data.stock ?? null,
         sortOrder: data.sortOrder ?? 0,
       })
       .returning();
@@ -396,6 +401,7 @@ adminProductsRoutes.patch('/:id', async (c) => {
     if (data.qtyOptions !== undefined) updatePayload.qtyOptions = data.qtyOptions;
     if (data.requiredFields !== undefined) updatePayload.requiredFields = data.requiredFields;
     if (data.available !== undefined) updatePayload.available = data.available;
+    if (data.stock !== undefined) updatePayload.stock = data.stock;
     if (data.sortOrder !== undefined) updatePayload.sortOrder = data.sortOrder;
 
     const [updated] = await db
@@ -455,5 +461,49 @@ adminProductsRoutes.delete('/:id', async (c) => {
   } catch (error) {
     console.error('Admin delete product error:', error);
     return err(c, 'DELETE_PRODUCT_FAILED', 'Failed to delete product', 500);
+  }
+});
+
+const updateStockSchema = z.object({
+  stock: z.union([z.number().int().min(0), z.null()]),
+  note: z.string().max(500).optional(),
+});
+
+// 7. PATCH /api/admin/products/:id/stock
+adminProductsRoutes.patch('/:id/stock', async (c) => {
+  const idParam = c.req.param('id');
+  const body = await c.req.json().catch(() => null);
+  if (!body) return err(c, 'INVALID_BODY', 'Invalid JSON body', 400);
+
+  const result = updateStockSchema.safeParse(body);
+  if (!result.success) {
+    return err(c, 'VALIDATION_ERROR', result.error.errors.map((e) => e.message).join(', '), 400);
+  }
+
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idParam);
+    const isNum = /^\d+$/.test(idParam);
+
+    let condition = eq(products.id, idParam);
+    if (!isUuid && isNum) {
+      condition = eq(products.alkasrProductId, Number(idParam));
+    }
+
+    const [existing] = await db.select().from(products).where(condition).limit(1);
+
+    if (!existing) {
+      return err(c, 'PRODUCT_NOT_FOUND', 'Product not found', 404);
+    }
+
+    const [updated] = await db
+      .update(products)
+      .set({ stock: result.data.stock })
+      .where(eq(products.id, existing.id))
+      .returning();
+
+    return ok(c, updated);
+  } catch (error) {
+    console.error('Admin update product stock error:', error);
+    return err(c, 'UPDATE_STOCK_FAILED', 'Failed to update product stock', 500);
   }
 });

@@ -127,6 +127,13 @@
       "when": 1790847000000,
       "tag": "0018_seed_branding_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790848000000,
+      "tag": "0019_inventory_stock",
+      "breakpoints": true
     }
   ]
 }
