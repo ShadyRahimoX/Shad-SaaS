@@ -14,8 +14,8 @@
     "dev": "node scripts/dev.mjs",
     "dev:api": "npm --prefix apps/api run dev",
     "dev:store": "npm --prefix apps/store run dev",
-    "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck",
+    "build": "npm --prefix apps/api run build && npm --prefix apps/admin run build && npm --prefix apps/store run build",
+    "typecheck": "npm --prefix apps/api run build && npm --prefix apps/admin run build && npm --prefix apps/store run build",
     "db:generate": "pnpm --filter @shad-saas/db generate",
     "db:push": "pnpm --filter @shad-saas/db push",
     "db:studio": "pnpm --filter @shad-saas/db studio"

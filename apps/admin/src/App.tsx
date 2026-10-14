@@ -33,7 +33,7 @@ const AdminApp: React.FC = () => {
         <Route path="/orders/:id" component={OrderDetail} />
         <Route path="/disputes" component={PH.AdminDisputes} />
         <Route path="/categories" component={Categories} />
-        <Route path="/products/add" component={PH.AdminProductsAdd} />
+        <Route path="/products/add" component={Products} />
         <Route path="/products" component={Products} />
         <Route path="/inventory" component={PH.AdminInventory} />
         <Route path="/payment-methods" component={PH.AdminPaymentMethods} />

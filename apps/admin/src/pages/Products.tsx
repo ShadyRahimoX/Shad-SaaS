@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'wouter';
 import {
   adminProductsApi,
   type AdminProduct,
@@ -8,6 +9,7 @@ import {
   adminCategoriesApi,
   type AdminCategory,
 } from '../lib/categories';
+import { ProductFormModal } from '../components/ProductFormModal';
 import {
   Package,
   Plus,
@@ -26,12 +28,25 @@ import {
 } from 'lucide-react';
 
 export const Products: React.FC = () => {
+  const [location, setLocation] = useLocation();
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [stats, setStats] = useState<ProductsStats | null>(null);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const limit = 20;
+
+  // Form Modal state
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+
+  // Auto-open modal if navigated to /products/add
+  useEffect(() => {
+    if (location === '/products/add') {
+      setEditingProduct(null);
+      setFormModalOpen(true);
+    }
+  }, [location]);
 
   // Filters state
   const [availableFilter, setAvailableFilter] = useState<'all' | 'true' | 'false'>('all');
@@ -148,11 +163,13 @@ export const Products: React.FC = () => {
   };
 
   const handleAddProductClick = () => {
-    alert('إضافة المنتجات ستتوفر في الواجهة القادمة I-c-2-b');
+    setEditingProduct(null);
+    setFormModalOpen(true);
   };
 
   const handleEditProductClick = (prod: AdminProduct) => {
-    alert(`تعديل المنتج "${prod.name}" سيتوفر في الواجهة القادمة I-c-2-b`);
+    setEditingProduct(prod);
+    setFormModalOpen(true);
   };
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
@@ -495,6 +512,24 @@ export const Products: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Product Form Modal */}
+      <ProductFormModal
+        open={formModalOpen}
+        onClose={() => {
+          setFormModalOpen(false);
+          if (location === '/products/add') {
+            setLocation('/products');
+          }
+        }}
+        product={editingProduct}
+        categories={categories}
+        onSuccess={() => {
+          if (location === '/products/add') {
+            setLocation('/products');
+          }
+          fetchProductsData(page, availableFilter, selectedCategory, selectedType, sortBy, appliedSearch);
+        }}
+      />
     </div>
   );
 };
