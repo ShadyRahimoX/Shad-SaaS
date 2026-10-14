@@ -37,6 +37,8 @@ const patchUserSchema = z.object({
   lastName: z.string().max(100).optional().nullable(),
   phone: z.string().max(50).optional().nullable(),
   country: z.string().max(50).optional().nullable(),
+  creditEnabled: z.boolean().optional(),
+  creditLimit: z.union([z.string(), z.number()]).optional(),
 });
 
 const adjustBalanceSchema = z.object({
@@ -291,6 +293,15 @@ adminUsersRoutes.patch('/:id', async (c) => {
     if (data.lastName !== undefined) updatePayload.lastName = data.lastName;
     if (data.phone !== undefined) updatePayload.phone = data.phone;
     if (data.country !== undefined) updatePayload.country = data.country;
+    if (data.creditEnabled !== undefined) updatePayload.creditEnabled = data.creditEnabled;
+    if (data.creditLimit !== undefined) updatePayload.creditLimit = String(data.creditLimit);
+
+    if (data.creditEnabled === false) {
+      const [userRow] = await db.select({ debtUsd: users.debtUsd }).from(users).where(eq(users.id, existing.id)).limit(1);
+      if (userRow && Number(userRow.debtUsd) > 0) {
+        return err(c, 'USER_HAS_OUTSTANDING_DEBT', 'Cannot disable credit while user has outstanding debt', 400);
+      }
+    }
 
     const [updated] = await db
       .update(users)
