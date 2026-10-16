@@ -10,6 +10,7 @@ import { Categories } from './pages/Categories';
 import { Products } from './pages/Products';
 import { Inventory } from './pages/Inventory';
 import { Agents } from './pages/Agents';
+import { Debts } from './pages/Debts';
 import * as PH from './pages/_placeholders';
 
 const AdminApp: React.FC = () => {
@@ -45,7 +46,7 @@ const AdminApp: React.FC = () => {
         <Route path="/currencies" component={PH.AdminCurrencies} />
         <Route path="/profit-log" component={PH.AdminProfitLog} />
         <Route path="/users" component={PH.AdminUsers} />
-        <Route path="/debts" component={PH.AdminDebts} />
+        <Route path="/debts" component={Debts} />
         <Route path="/top-spenders" component={PH.AdminTopSpenders} />
         <Route path="/agents" component={Agents} />
         <Route path="/referrals" component={PH.AdminReferrals} />
