@@ -99,7 +99,6 @@ export const Users: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null as string | null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
-  const [detailNotice, setDetailNotice] = useState<string | null>(null);
   const latestReqRef = useRef(0);
 
   const fetchUsersData = async (
@@ -397,20 +396,6 @@ export const Users: React.FC = () => {
         </select>
       </div>
 
-      {/* Notice for Details placeholder */}
-      {detailNotice && (
-        <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold flex items-center justify-between">
-          <span>{detailNotice}</span>
-          <button
-            type="button"
-            onClick={() => setDetailNotice(null)}
-            className="text-xs underline cursor-pointer"
-          >
-            إغلاق
-          </button>
-        </div>
-      )}
-
       {/* 5. Users List */}
       {loading ? (
         <div className="p-16 rounded-3xl bg-card border border-border shadow-xs flex flex-col items-center justify-center gap-3">
@@ -574,19 +559,14 @@ export const Users: React.FC = () => {
 
                 {/* Right: Actions */}
                 <div className="flex items-center justify-end gap-2 shrink-0 border-t xl:border-t-0 border-border/50 pt-3 xl:pt-0">
-                  <button
-                    type="button"
+                  <Link
+                    href={`/users/${u.id}`}
                     data-user-details-btn
-                    onClick={() =>
-                      setDetailNotice(
-                        `صفحة تفاصيل المستخدم (@${u.username} — #${u.displayId}) مخصصة للمرحلة I-d-3-b.`
-                      )
-                    }
                     className="px-3.5 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <UserIcon className="w-3.5 h-3.5" />
                     <span>التفاصيل</span>
-                  </button>
+                  </Link>
 
                   <button
                     type="button"

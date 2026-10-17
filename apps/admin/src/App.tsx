@@ -12,6 +12,7 @@ import { Inventory } from './pages/Inventory';
 import { Agents } from './pages/Agents';
 import { Debts } from './pages/Debts';
 import { Users } from './pages/Users';
+import { UserDetail } from './pages/UserDetail';
 import * as PH from './pages/_placeholders';
 
 const AdminApp: React.FC = () => {
@@ -46,6 +47,7 @@ const AdminApp: React.FC = () => {
         <Route path="/vip-profit" component={PH.AdminVipProfit} />
         <Route path="/currencies" component={PH.AdminCurrencies} />
         <Route path="/profit-log" component={PH.AdminProfitLog} />
+        <Route path="/users/:id" component={UserDetail} />
         <Route path="/users" component={Users} />
         <Route path="/debts" component={Debts} />
         <Route path="/top-spenders" component={PH.AdminTopSpenders} />

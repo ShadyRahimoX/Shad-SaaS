@@ -19,9 +19,17 @@ export interface AdminUser {
   vipName: string;
   vipColor: string;
   referralCode: string | null;
+  referredBy?: string | null;
+  emailVerified?: boolean;
+  googleId?: string | null;
   ordersCount: number;
   createdAt: string;
+  updatedAt?: string;
   lastLoginAt: string | null;
+  creditEnabled?: boolean;
+  creditLimit?: string;
+  debtUsd?: string;
+  availableCreditUsd?: string;
 }
 
 export interface UsersStats {
@@ -35,6 +43,26 @@ export interface UsersStats {
 
 export interface UsersListResponse {
   users: AdminUser[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface UserTransaction {
+  id: string;
+  userId: string;
+  type: string;
+  amountUsd: string;
+  balanceBefore: string;
+  balanceAfter: string;
+  referenceType: string | null;
+  referenceId: string | null;
+  description: string | null;
+  createdAt: string;
+}
+
+export interface UserTransactionsResponse {
+  transactions: UserTransaction[];
   total: number;
   page: number;
   limit: number;
@@ -79,4 +107,13 @@ export const adminUsersApi = {
   get: (id: string) => adminApi.get<AdminUser>(`/api/admin/users/${id}`),
   update: (id: string, data: UserUpdateInput) =>
     adminApi.patch<AdminUser>(`/api/admin/users/${id}`, data),
+  getTransactions: (id: string, params?: { page?: number; limit?: number }) => {
+    const q = new URLSearchParams();
+    if (params?.page) q.set('page', String(params.page));
+    if (params?.limit) q.set('limit', String(params.limit));
+    const qs = q.toString();
+    return adminApi.get<UserTransactionsResponse>(
+      `/api/admin/users/${id}/transactions${qs ? `?${qs}` : ''}`
+    );
+  },
 };
