@@ -8,6 +8,7 @@ import {
 import { adminDebtsApi, type DebtDetailResponse } from '../lib/debts';
 import { UserAvatar } from '../components/UserAvatar';
 import { UserEditModal } from '../components/UserEditModal';
+import { BalanceAdjustModal } from '../components/BalanceAdjustModal';
 import {
   ArrowRight,
   ArrowLeft,
@@ -78,8 +79,8 @@ export const UserDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [balanceModalOpen, setBalanceModalOpen] = useState(false);
   const [banLoading, setBanLoading] = useState(false);
-  const [soonNotice, setSoonNotice] = useState<string | null>(null);
 
   const fetchUserAndDebt = async () => {
     if (!userIdParam) return;
@@ -266,23 +267,6 @@ export const UserDetail: React.FC = () => {
         </Link>
       </div>
 
-      {/* Soon Notice */}
-      {soonNotice && (
-        <div
-          data-user-soon-notice
-          className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold flex items-center justify-between"
-        >
-          <span>{soonNotice}</span>
-          <button
-            type="button"
-            onClick={() => setSoonNotice(null)}
-            className="text-xs underline cursor-pointer"
-          >
-            إغلاق
-          </button>
-        </div>
-      )}
-
       {/* 2. Header Card */}
       <div
         data-user-header-card
@@ -358,7 +342,7 @@ export const UserDetail: React.FC = () => {
           <button
             type="button"
             data-user-balance-soon-btn
-            onClick={() => setSoonNotice('قريباً — سيتم تفعيل تعديل الرصيد في I-d-3-c')}
+            onClick={() => setBalanceModalOpen(true)}
             className="px-4 py-2.5 rounded-2xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Wallet className="w-4 h-4" />
@@ -655,7 +639,8 @@ export const UserDetail: React.FC = () => {
               <div className="flex items-center gap-2.5 pt-2">
                 <button
                   type="button"
-                  onClick={() => setSoonNotice('قريباً — سيتم تفعيل تعديل الرصيد في I-d-3-c')}
+                  data-credit-balance-btn
+                  onClick={() => setBalanceModalOpen(true)}
                   className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Wallet className="w-3.5 h-3.5" />
@@ -789,6 +774,18 @@ export const UserDetail: React.FC = () => {
         user={user}
         onSuccess={() => {
           fetchUserAndDebt();
+        }}
+      />
+
+      {/* Balance Adjust Modal */}
+      <BalanceAdjustModal
+        open={balanceModalOpen}
+        onClose={() => setBalanceModalOpen(false)}
+        user={user}
+        onSuccess={() => {
+          fetchUserAndDebt();
+          fetchTransactions(1, false);
+          setTxPage(1);
         }}
       />
     </div>

@@ -91,6 +91,19 @@ export interface UserUpdateInput {
   creditLimit?: string | number;
 }
 
+export type BalanceAdjustReason =
+  | 'manual_credit'
+  | 'manual_debit'
+  | 'bonus'
+  | 'refund'
+  | 'correction';
+
+export interface BalanceAdjustInput {
+  amount: number;
+  reason: BalanceAdjustReason;
+  note: string;
+}
+
 export const adminUsersApi = {
   getStats: () => adminApi.get<UsersStats>('/api/admin/users/stats'),
   list: (params?: UsersQuery) => {
@@ -116,4 +129,9 @@ export const adminUsersApi = {
       `/api/admin/users/${id}/transactions${qs ? `?${qs}` : ''}`
     );
   },
+  updateBalance: (id: string, data: BalanceAdjustInput) =>
+    adminApi.post<{ user: AdminUser; transaction: UserTransaction }>(
+      `/api/admin/users/${id}/balance`,
+      data
+    ),
 };
